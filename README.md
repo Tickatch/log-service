@@ -41,7 +41,7 @@ find src/test/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed
 - LayeredArchitectureTest 코드 내 패키지명
 - 그 외 project-interface 또는 projectinterface로 되어있는 항목
 
-5. gradle의 spotbugsMain, spotbugsTest, spotlessCheck, test 를 실행하여 프로젝트의 문제가 없는지 확인합니다.
+5. gradle의 spotbugsMain, spotbugsTest, spotlessCheck, test 를 실행하여 프로젝트 문제가 없는지 확인합니다.
 
 ### Git Clone 기능 활용
 
@@ -85,7 +85,7 @@ find src/test/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed
 - LayeredArchitectureTest 코드 내 패키지명
 - 그 외 project-interface 또는 projectinterface로 되어있는 항목
 
-6. gradle의 checkstyleMain, checkstyleTest, spotlessCheck, test 를 실행하여 프로젝트의 문제가 없는지 확인합니다.
+6. gradle의 spotbugsMain, spotbugsTest, spotlessCheck, test 를 실행하여 프로젝트에 문제가 없는지 확인합니다.
 
 7. 1번에서 만든 레포지토리와 프로젝트를 연결합니다.
 
