@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 1.0.0
  */
 @SpringBootApplication
-public class logserviceApplication {
+public class LogServiceApplication {
 
   /**
    * 애플리케이션 실행 진입점.
@@ -20,6 +20,6 @@ public class logserviceApplication {
    * @param args 명령줄 인자
    */
   public static void main(String[] args) {
-    SpringApplication.run(logserviceApplication.class, args);
+    SpringApplication.run(LogServiceApplication.class, args);
   }
 }
