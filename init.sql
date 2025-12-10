@@ -9,7 +9,7 @@ CREATE TABLE log_service.p_event_log (
                                           user_id         UUID,
                                           resource_id     VARCHAR(100),
                                           ip_address      VARCHAR(50),
-                                          trace_id        UUID,
+                                          trace_id        VARCHAR(64),
                                           service_name    VARCHAR(100) NOT NULL,
                                           created_at      TIMESTAMP NOT NULL DEFAULT NOW()
 );
