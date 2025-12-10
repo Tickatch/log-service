@@ -34,8 +34,7 @@ public class EventLog {
   @Column(name = "event_detail", columnDefinition = "jsonb")
   private String eventDetail;
 
-  @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "device_info", columnDefinition = "jsonb")
+  @Column(name = "device_info")
   private String deviceInfo;
 
   @Column(name = "user_id", columnDefinition = "UUID")
