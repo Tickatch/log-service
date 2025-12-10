@@ -15,7 +15,7 @@ import org.hibernate.type.SqlTypes;
 public class EventLog {
 
   @Id
-  @Column(name ="id", columnDefinition = "UUID")
+  @Column(name = "id", columnDefinition = "UUID")
   private UUID logId;
 
   @Column(name = "event_category", length = 50, nullable = false)
