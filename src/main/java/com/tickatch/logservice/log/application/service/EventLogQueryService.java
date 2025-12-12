@@ -1,11 +1,11 @@
 package com.tickatch.logservice.log.application.service;
 
+import com.tickatch.logservice.global.error.BusinessException;
 import com.tickatch.logservice.log.application.dto.EventLogResult;
 import com.tickatch.logservice.log.domain.EventLog;
 import com.tickatch.logservice.log.domain.exception.LogErrorCode;
 import com.tickatch.logservice.log.domain.repository.EventLogQueryRepository;
 import com.tickatch.logservice.log.domain.search.EventLogSearchCondition;
-import io.github.tickatch.common.error.BusinessException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

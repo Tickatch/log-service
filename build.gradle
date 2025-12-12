@@ -69,10 +69,14 @@ dependencies {
     // PostgreSQL
     implementation 'org.postgresql:postgresql'
 
-    implementation 'io.github.tickatch:common-lib:0.0.4'
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
+
+    // Security (인증/인가)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // Prometheus
-    implementation 'io.prometheus:simpleclient_pushgateway:0.16.0'
+    implementation 'io.prometheus:prometheus-metrics-exporter-pushgateway'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
@@ -93,6 +97,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 시큐리티 목 유저 추가
+    implementation 'org.springframework.security:spring-security-test'
 
     // mockito javaagent
     mockitoAgent('org.mockito:mockito-core') {

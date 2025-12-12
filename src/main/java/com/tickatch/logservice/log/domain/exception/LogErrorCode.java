@@ -1,6 +1,6 @@
 package com.tickatch.logservice.log.domain.exception;
 
-import io.github.tickatch.common.error.ErrorCode;
+import com.tickatch.logservice.global.error.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

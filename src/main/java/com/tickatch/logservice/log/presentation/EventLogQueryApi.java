@@ -1,11 +1,11 @@
 package com.tickatch.logservice.log.presentation;
 
+import com.tickatch.logservice.global.api.ApiResponse;
 import com.tickatch.logservice.log.application.dto.EventLogResult;
 import com.tickatch.logservice.log.application.service.EventLogQueryService;
 import com.tickatch.logservice.log.domain.search.EventLogSearchCondition;
 import com.tickatch.logservice.log.presentation.dto.EventLogListResponse;
 import com.tickatch.logservice.log.presentation.dto.EventLogResponse;
-import io.github.tickatch.common.api.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
