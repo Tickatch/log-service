@@ -4,7 +4,6 @@ package com.tickatch.logservice.global.error;
  * 에러 코드 인터페이스.
  *
  * <p>모든 도메인별 에러 코드 Enum이 구현해야 하는 인터페이스.
- * 메시지는 {@link io.github.tickatch.common.message.MessageResolver}를 통해 별도 관리된다.
  *
  * <p>사용 예시:
  * <pre>{@code
