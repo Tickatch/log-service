@@ -7,6 +7,7 @@ public record EventLogRegisterCommand(
     String eventType,
     String actionType,
     String eventDetail,
+    String deviceInfo,
     UUID userId,
     String resourceId,
     String ipAddress,

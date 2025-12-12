@@ -21,6 +21,7 @@ public class EventLogRegisterService {
             command.eventType(),
             command.actionType(),
             command.eventDetail(),
+            command.deviceInfo(),
             command.userId(),
             command.resourceId(),
             command.ipAddress(),

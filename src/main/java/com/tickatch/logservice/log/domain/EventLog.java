@@ -1,6 +1,9 @@
 package com.tickatch.logservice.log.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
@@ -31,6 +34,9 @@ public class EventLog {
   @Column(name = "event_detail", columnDefinition = "jsonb")
   private String eventDetail;
 
+  @Column(name = "device_info")
+  private String deviceInfo;
+
   @Column(name = "user_id", columnDefinition = "UUID")
   private UUID userId;
 
@@ -54,6 +60,7 @@ public class EventLog {
       String eventType,
       String actionType,
       String eventDetail,
+      String deviceInfo,
       UUID userId,
       String resourceId,
       String ipAddress,
@@ -64,6 +71,7 @@ public class EventLog {
     this.eventType = eventType;
     this.actionType = actionType;
     this.eventDetail = eventDetail;
+    this.deviceInfo = deviceInfo;
     this.userId = userId;
     this.resourceId = resourceId;
     this.ipAddress = ipAddress;
@@ -77,6 +85,7 @@ public class EventLog {
       String eventType,
       String actionType,
       String eventDetail,
+      String deviceInfo,
       UUID userId,
       String resourceId,
       String ipAddress,
@@ -87,6 +96,7 @@ public class EventLog {
         eventType,
         actionType,
         eventDetail,
+        deviceInfo,
         userId,
         resourceId,
         ipAddress,
