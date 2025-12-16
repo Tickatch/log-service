@@ -15,3 +15,18 @@ CREATE TABLE log_service.p_event_log
     service_name   VARCHAR(100) NOT NULL,
     created_at     TIMESTAMP    NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE log_service.p_reservation_seat_log
+(
+    id                  UUID PRIMARY KEY,
+
+    reservation_seat_id BIGINT       NOT NULL,
+    seat_number         VARCHAR(255) NOT NULL,
+
+    action_type         VARCHAR(20)  NOT NULL,
+
+    actor_type          VARCHAR(20)  NOT NULL,
+    actor_user_id       UUID         NULL,
+
+    occurred_at         TIMESTAMP    NOT NULL
+);
