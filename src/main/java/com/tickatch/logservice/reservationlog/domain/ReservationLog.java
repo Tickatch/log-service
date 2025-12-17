@@ -23,10 +23,10 @@ public class ReservationLog {
   @Column(name = "reservation_id", nullable = false)
   private UUID reservationId;
 
-  @Column(name = "reservation_number", nullable = false, length = 50)
+  @Column(name = "reservation_number", nullable = false)
   private String reservationNumber;
 
-  @Column(name = "action_type", nullable = false)
+  @Column(name = "action_type", nullable = false, length = 50)
   private String actionType;
 
   @Column(name = "actor_type", nullable = false, length = 20)
