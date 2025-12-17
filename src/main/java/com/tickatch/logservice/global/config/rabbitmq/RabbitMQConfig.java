@@ -23,8 +23,10 @@ public class RabbitMQConfig {
   public static final String LOG_EXCHANGE = "tickatch.log";
 
   public static final String QUEUE_RESERVATION_SEAT_LOG = "tickatch.reservation-seat.log.queue";
-
   public static final String ROUTING_KEY_RESERVATION_SEAT_LOG = "reservation-seat.log";
+
+  public static final String QUEUE_ARTHALL_LOG = "tickatch.arthall.log.queue";
+  public static final String ROUTING_KEY_ARTHALL_LOG = "arthall.log";
 
   /* =========================
    * Exchange
@@ -45,6 +47,14 @@ public class RabbitMQConfig {
         .build();
   }
 
+  @Bean
+  public Queue artHallLogQueue() {
+    return QueueBuilder.durable(QUEUE_ARTHALL_LOG)
+        .withArgument("x-dead-letter-exchange", LOG_EXCHANGE + ".dlx")
+        .withArgument("x-dead-letter-routing-key", "dlq." + ROUTING_KEY_ARTHALL_LOG)
+        .build();
+  }
+
   /* =========================
    * Binding
    * ========================= */
@@ -54,6 +64,11 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(reservationSeatLogQueue)
         .to(logExchange)
         .with(ROUTING_KEY_RESERVATION_SEAT_LOG);
+  }
+
+  @Bean
+  public Binding artHallLogBinding(Queue artHallLogQueue, TopicExchange logExchange) {
+    return BindingBuilder.bind(artHallLogQueue).to(logExchange).with(ROUTING_KEY_ARTHALL_LOG);
   }
 
   /* =========================
@@ -70,11 +85,23 @@ public class RabbitMQConfig {
   }
 
   @Bean
+  public Queue artHallLogDlq() {
+    return QueueBuilder.durable(QUEUE_ARTHALL_LOG + ".dlq").build();
+  }
+
+  @Bean
   public Binding reservationSeatLogDlqBinding(
       Queue reservationSeatLogDlq, TopicExchange deadLetterExchange) {
     return BindingBuilder.bind(reservationSeatLogDlq)
         .to(deadLetterExchange)
         .with("dlq." + ROUTING_KEY_RESERVATION_SEAT_LOG);
+  }
+
+  @Bean
+  public Binding artHallLogDlqBinding(Queue artHallLogDlq, TopicExchange deadLetterExchange) {
+    return BindingBuilder.bind(artHallLogDlq)
+        .to(deadLetterExchange)
+        .with("dlq." + ROUTING_KEY_ARTHALL_LOG);
   }
 
   /* =========================
