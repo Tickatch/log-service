@@ -23,7 +23,7 @@ public class ArtHallLogConsumer {
   @Transactional
   public void consume(ArtHallLogEvent event) {
     try {
-      log.debug("Consuming art hall log event: {}", event);
+      log.debug("Consuming arthall log event: {}", event);
 
       ArtHallLog log =
           ArtHallLog.create(
@@ -38,7 +38,7 @@ public class ArtHallLogConsumer {
       artHallLogRepository.save(log);
 
     } catch (Exception e) {
-      log.error("Failed to save art hall log: {}", event, e);
+      log.error("Failed to save arthall log: {}", event, e);
       throw e; // DLQ로 전송되도록
     }
   }
