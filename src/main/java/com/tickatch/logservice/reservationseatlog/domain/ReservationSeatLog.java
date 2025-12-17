@@ -26,7 +26,7 @@ public class ReservationSeatLog {
   @Column(name = "seat_number", nullable = false)
   private String seatNumber;
 
-  @Column(name = "action_type", nullable = false, length = 20)
+  @Column(name = "action_type", nullable = false, length = 50)
   private String actionType;
 
   @Column(name = "actor_type", nullable = false, length = 20)
