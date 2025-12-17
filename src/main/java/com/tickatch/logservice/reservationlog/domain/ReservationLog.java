@@ -23,7 +23,10 @@ public class ReservationLog {
   @Column(name = "reservation_id", nullable = false)
   private UUID reservationId;
 
-  @Column(name = "action_type", nullable = false, length = 50)
+  @Column(name = "reservation_number", nullable = false, length = 50)
+  private String reservationNumber;
+
+  @Column(name = "action_type", nullable = false)
   private String actionType;
 
   @Column(name = "actor_type", nullable = false, length = 20)
@@ -38,6 +41,7 @@ public class ReservationLog {
   public static ReservationLog create(
       UUID reservationLogId,
       UUID reservationId,
+      String reservationNumber,
       String actionType,
       String actorType,
       UUID actorUserId,
@@ -46,6 +50,7 @@ public class ReservationLog {
     ReservationLog log = new ReservationLog();
     log.reservationLogId = reservationLogId;
     log.reservationId = reservationId;
+    log.reservationNumber = reservationNumber;
     log.actionType = actionType;
     log.actorType = actorType;
     log.actorUserId = actorUserId;

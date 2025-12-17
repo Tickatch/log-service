@@ -29,6 +29,7 @@ public class ReservationLogConsumer {
           ReservationLog.create(
               event.eventId(),
               event.reservationId(),
+              event.reservationNumber(),
               event.actionType(),
               event.actorType(),
               event.actorUserId(),
