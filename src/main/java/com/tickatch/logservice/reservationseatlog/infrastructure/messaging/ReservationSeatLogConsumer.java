@@ -2,7 +2,7 @@ package com.tickatch.logservice.reservationseatlog.infrastructure.messaging;
 
 import com.tickatch.logservice.global.config.rabbitmq.RabbitMQConfig;
 import com.tickatch.logservice.reservationseatlog.domain.ReservationSeatLog;
-import com.tickatch.logservice.reservationseatlog.domain.event.ReservationSeatActionEvent;
+import com.tickatch.logservice.reservationseatlog.domain.event.ReservationSeatEvent;
 import com.tickatch.logservice.reservationseatlog.domain.repository.ReservationSeatLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class ReservationSeatLogConsumer {
       queues = RabbitMQConfig.QUEUE_RESERVATION_SEAT_LOG,
       containerFactory = "rabbitListenerContainerFactory")
   @Transactional
-  public void consume(ReservationSeatActionEvent event) {
+  public void consume(ReservationSeatEvent event) {
     try {
       log.debug("Consuming reservation seat log: {}", event);
 
