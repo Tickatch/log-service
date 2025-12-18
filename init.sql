@@ -111,3 +111,12 @@ CREATE TABLE log_service.p_user_log
     actor_user_id UUID        NULL,
     occurred_at   TIMESTAMP   NOT NULL
 );
+
+CREATE TABLE log_service.p_auth_log
+(
+    id            UUID        NOT NULL,
+    action_type   VARCHAR(50) NOT NULL,
+    actor_type    VARCHAR(20) NOT NULL,
+    actor_user_id UUID        NOT NULL, -- auth_id
+    occurred_at   TIMESTAMP   NOT NULL
+);
