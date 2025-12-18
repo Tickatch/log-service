@@ -1,4 +1,4 @@
-package com.tickatch.logservice.reservationseatlog.domain;
+package com.tickatch.logservice.arthalllog.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,23 +11,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "p_reservation_seat_log")
+@Table(name = "p_arthall_domain_log")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReservationSeatLog {
+public class ArtHallLog {
 
   @Id
   @Column(name = "id", nullable = false)
-  private UUID reservationSeatLogId;
+  private UUID artHallLogId;
 
-  @Column(name = "reservation_seat_id", nullable = false)
-  private Long reservationSeatId;
+  @Column(name = "domain_type", nullable = false, length = 20)
+  private String domainType; // ART_HALL | STAGE
 
-  @Column(name = "seat_number", nullable = false)
-  private String seatNumber;
+  @Column(name = "domain_id", nullable = false)
+  private Long domainId; // artHallId or stageId
 
   @Column(name = "action_type", nullable = false, length = 50)
-  private String actionType;
+  private String actionType; // ACTIVATED | INACTIVATED | DELETED
 
   @Column(name = "actor_type", nullable = false, length = 20)
   private String actorType;
@@ -38,18 +38,19 @@ public class ReservationSeatLog {
   @Column(name = "occurred_at", nullable = false)
   private LocalDateTime occurredAt;
 
-  public static ReservationSeatLog create(
-      UUID reservationSeatLogId,
-      Long reservationSeatId,
-      String seatNumber,
+  public static ArtHallLog create(
+      UUID artHallLogId,
+      String domainType,
+      Long domainId,
       String actionType,
       String actorType,
       UUID actorUserId,
       LocalDateTime occurredAt) {
-    ReservationSeatLog log = new ReservationSeatLog();
-    log.reservationSeatLogId = reservationSeatLogId;
-    log.reservationSeatId = reservationSeatId;
-    log.seatNumber = seatNumber;
+
+    ArtHallLog log = new ArtHallLog();
+    log.artHallLogId = artHallLogId;
+    log.domainType = domainType;
+    log.domainId = domainId;
     log.actionType = actionType;
     log.actorType = actorType;
     log.actorUserId = actorUserId;

@@ -23,10 +23,25 @@ CREATE TABLE log_service.p_reservation_seat_log
     reservation_seat_id BIGINT       NOT NULL,
     seat_number         VARCHAR(255) NOT NULL,
 
-    action_type         VARCHAR(20)  NOT NULL,
+    action_type         VARCHAR(50)  NOT NULL,
 
     actor_type          VARCHAR(20)  NOT NULL,
     actor_user_id       UUID         NULL,
 
     occurred_at         TIMESTAMP    NOT NULL
+);
+
+CREATE TABLE log_service.p_arthall_domain_log
+(
+    id            UUID PRIMARY KEY,
+
+    domain_type   VARCHAR(20) NOT NULL, -- ARTHALL | STAGE
+    domain_id     BIGINT      NOT NULL, -- arthall_id 또는 stage_id
+
+    action_type   VARCHAR(50) NOT NULL, -- ACTIVATED | INACTIVATED | DELETED
+
+    actor_type    VARCHAR(20) NOT NULL,
+    actor_user_id UUID        NULL,
+
+    occurred_at   TIMESTAMP   NOT NULL
 );

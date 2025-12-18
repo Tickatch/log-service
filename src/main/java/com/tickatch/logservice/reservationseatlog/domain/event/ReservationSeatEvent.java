@@ -3,7 +3,7 @@ package com.tickatch.logservice.reservationseatlog.domain.event;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record ReservationSeatActionEvent(
+public record ReservationSeatEvent(
     UUID eventId, // 발행 서비스에서 생성하는 이벤트 ID
     Long reservationSeatId,
     String seatNumber,
