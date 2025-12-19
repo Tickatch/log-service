@@ -23,7 +23,7 @@ public class ReservationLog {
   @Column(name = "reservation_id", nullable = false)
   private UUID reservationId;
 
-  @Column(name = "reservation_number", nullable = false)
+  @Column(name = "reservation_number")
   private String reservationNumber;
 
   @Column(name = "action_type", nullable = false, length = 50)

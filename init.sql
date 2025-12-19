@@ -49,7 +49,7 @@ CREATE TABLE log_service.p_reservation_log
     id                 UUID         NOT NULL,
 
     reservation_id     UUID         NOT NULL,
-    reservation_number VARCHAR(255) NOT NULL,
+    reservation_number VARCHAR(255) NULL,
 
     action_type        VARCHAR(50)  NOT NULL,
 
