@@ -50,6 +50,10 @@ public class RabbitMQConfig {
   public static final String QUEUE_USER_LOG = "tickatch.user.log.queue";
   public static final String ROUTING_KEY_USER_LOG = "user.log";
 
+  // auth
+  public static final String QUEUE_AUTH_LOG = "tickatch.auth.log.queue";
+  public static final String ROUTING_KEY_AUTH_LOG = "auth.log";
+
   /* =========================
    * Exchange
    * ========================= */
@@ -124,6 +128,15 @@ public class RabbitMQConfig {
         .build();
   }
 
+  // auth
+  @Bean
+  public Queue authLogQueue() {
+    return QueueBuilder.durable(QUEUE_AUTH_LOG)
+        .withArgument("x-dead-letter-exchange", LOG_EXCHANGE + ".dlx")
+        .withArgument("x-dead-letter-routing-key", "dlq." + ROUTING_KEY_AUTH_LOG)
+        .build();
+  }
+
   /* =========================
    * Binding
    * ========================= */
@@ -174,6 +187,12 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(userLogQueue).to(logExchange).with(ROUTING_KEY_USER_LOG);
   }
 
+  // auth
+  @Bean
+  public Binding authLogBinding(Queue authLogQueue, TopicExchange logExchange) {
+    return BindingBuilder.bind(authLogQueue).to(logExchange).with(ROUTING_KEY_AUTH_LOG);
+  }
+
   /* =========================
    * Dead Letter
    * ========================= */
@@ -222,6 +241,12 @@ public class RabbitMQConfig {
   @Bean
   public Queue userLogDlq() {
     return QueueBuilder.durable(QUEUE_USER_LOG + ".dlq").build();
+  }
+
+  // auth
+  @Bean
+  public Queue authLogDlq() {
+    return QueueBuilder.durable(QUEUE_AUTH_LOG + ".dlq").build();
   }
 
   // 예매 좌석
@@ -280,6 +305,14 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(userLogDlq)
         .to(deadLetterExchange)
         .with("dlq." + ROUTING_KEY_USER_LOG);
+  }
+
+  // auth
+  @Bean
+  public Binding authLogDlqBinding(Queue authLogDlq, TopicExchange deadLetterExchange) {
+    return BindingBuilder.bind(authLogDlq)
+        .to(deadLetterExchange)
+        .with("dlq." + ROUTING_KEY_AUTH_LOG);
   }
 
   /* =========================
