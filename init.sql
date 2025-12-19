@@ -60,7 +60,6 @@ CREATE TABLE log_service.p_product_log
     occurred_at   TIMESTAMP   NOT NULL
 );
 
-drop table log_service.p_reservation_log;
 CREATE TABLE log_service.p_reservation_log
 (
     id                 UUID         NOT NULL,
@@ -74,4 +73,19 @@ CREATE TABLE log_service.p_reservation_log
     actor_user_id      UUID         NULL,
 
     occurred_at        TIMESTAMP    NOT NULL
+);
+
+CREATE TABLE log_service.p_ticket_log
+(
+    id             UUID         NOT NULL,
+
+    ticket_id      UUID         NOT NULL,
+    receive_method VARCHAR(255) NULL,
+
+    action_type    VARCHAR(50)  NOT NULL,
+
+    actor_type     VARCHAR(20)  NOT NULL,
+    actor_user_id  UUID         NULL,
+
+    occurred_at    TIMESTAMP    NOT NULL
 );

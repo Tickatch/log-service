@@ -38,6 +38,10 @@ public class RabbitMQConfig {
   public static final String QUEUE_RESERVATION_LOG = "tickatch.reservation.log.queue";
   public static final String ROUTING_KEY_RESERVATION_LOG = "reservation.log";
 
+  // 티켓
+  public static final String QUEUE_TICKET_LOG = "tickatch.ticket.log.queue";
+  public static final String ROUTING_KEY_TICKET_LOG = "ticket.log";
+
   /* =========================
    * Exchange
    * ========================= */
@@ -85,6 +89,15 @@ public class RabbitMQConfig {
         .build();
   }
 
+  // 티켓
+  @Bean
+  public Queue ticketLogQueue() {
+    return QueueBuilder.durable(QUEUE_TICKET_LOG)
+        .withArgument("x-dead-letter-exchange", LOG_EXCHANGE + ".dlx")
+        .withArgument("x-dead-letter-routing-key", "dlq." + ROUTING_KEY_TICKET_LOG)
+        .build();
+  }
+
   /* =========================
    * Binding
    * ========================= */
@@ -115,6 +128,12 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(reservationLogQueue)
         .to(logExchange)
         .with(ROUTING_KEY_RESERVATION_LOG);
+  }
+
+  // 티켓
+  @Bean
+  public Binding ticketLogBinding(Queue ticketLogQueue, TopicExchange logExchange) {
+    return BindingBuilder.bind(ticketLogQueue).to(logExchange).with(ROUTING_KEY_TICKET_LOG);
   }
 
   /* =========================
@@ -149,6 +168,12 @@ public class RabbitMQConfig {
     return QueueBuilder.durable(QUEUE_RESERVATION_LOG + ".dlq").build();
   }
 
+  // 티켓
+  @Bean
+  public Queue ticketLogDlq() {
+    return QueueBuilder.durable(QUEUE_TICKET_LOG + ".dlq").build();
+  }
+
   // 예매 좌석
   @Bean
   public Binding reservationSeatLogDlqBinding(
@@ -181,6 +206,14 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(reservationLogDlq)
         .to(deadLetterExchange)
         .with("dlq." + ROUTING_KEY_RESERVATION_LOG);
+  }
+
+  // 티켓
+  @Bean
+  public Binding ticketLogDlqBinding(Queue ticketLogDlq, TopicExchange deadLetterExchange) {
+    return BindingBuilder.bind(ticketLogDlq)
+        .to(deadLetterExchange)
+        .with("dlq." + ROUTING_KEY_TICKET_LOG);
   }
 
   /* =========================
