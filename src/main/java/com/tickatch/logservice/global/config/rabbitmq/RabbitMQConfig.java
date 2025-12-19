@@ -46,6 +46,10 @@ public class RabbitMQConfig {
   public static final String QUEUE_PAYMENT_LOG = "tickatch.payment.log.queue";
   public static final String ROUTING_KEY_PAYMENT_LOG = "payment.log";
 
+  // 유저
+  public static final String QUEUE_USER_LOG = "tickatch.user.log.queue";
+  public static final String ROUTING_KEY_USER_LOG = "user.log";
+
   /* =========================
    * Exchange
    * ========================= */
@@ -111,6 +115,15 @@ public class RabbitMQConfig {
         .build();
   }
 
+  // 유저
+  @Bean
+  public Queue userLogQueue() {
+    return QueueBuilder.durable(QUEUE_USER_LOG)
+        .withArgument("x-dead-letter-exchange", LOG_EXCHANGE + ".dlx")
+        .withArgument("x-dead-letter-routing-key", "dlq." + ROUTING_KEY_USER_LOG)
+        .build();
+  }
+
   /* =========================
    * Binding
    * ========================= */
@@ -155,6 +168,12 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(paymentLogQueue).to(logExchange).with(ROUTING_KEY_PAYMENT_LOG);
   }
 
+  // 유저
+  @Bean
+  public Binding userLogBinding(Queue userLogQueue, TopicExchange logExchange) {
+    return BindingBuilder.bind(userLogQueue).to(logExchange).with(ROUTING_KEY_USER_LOG);
+  }
+
   /* =========================
    * Dead Letter
    * ========================= */
@@ -197,6 +216,12 @@ public class RabbitMQConfig {
   @Bean
   public Queue paymentLogDlq() {
     return QueueBuilder.durable(QUEUE_PAYMENT_LOG + ".dlq").build();
+  }
+
+  // 유저
+  @Bean
+  public Queue userLogDlq() {
+    return QueueBuilder.durable(QUEUE_USER_LOG + ".dlq").build();
   }
 
   // 예매 좌석
@@ -247,6 +272,14 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(paymentLogDlq)
         .to(deadLetterExchange)
         .with("dlq." + ROUTING_KEY_PAYMENT_LOG);
+  }
+
+  // 유저
+  @Bean
+  public Binding userLogDlqBinding(Queue userLogDlq, TopicExchange deadLetterExchange) {
+    return BindingBuilder.bind(userLogDlq)
+        .to(deadLetterExchange)
+        .with("dlq." + ROUTING_KEY_USER_LOG);
   }
 
   /* =========================
