@@ -26,7 +26,7 @@ public class ArtHallLog {
   @Column(name = "domain_id", nullable = false)
   private Long domainId; // artHallId or stageId
 
-  @Column(name = "action_type", nullable = false, length = 20)
+  @Column(name = "action_type", nullable = false, length = 50)
   private String actionType; // ACTIVATED | INACTIVATED | DELETED
 
   @Column(name = "actor_type", nullable = false, length = 20)
