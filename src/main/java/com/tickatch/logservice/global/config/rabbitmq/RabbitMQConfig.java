@@ -34,6 +34,10 @@ public class RabbitMQConfig {
   public static final String QUEUE_PRODUCT_LOG = "tickatch.product.log.queue";
   public static final String ROUTING_KEY_PRODUCT_LOG = "product.log";
 
+  // 예매
+  public static final String QUEUE_RESERVATION_LOG = "tickatch.reservation.log.queue";
+  public static final String ROUTING_KEY_RESERVATION_LOG = "reservation.log";
+
   /* =========================
    * Exchange
    * ========================= */
@@ -72,6 +76,15 @@ public class RabbitMQConfig {
         .build();
   }
 
+  // 예매
+  @Bean
+  public Queue reservationLogQueue() {
+    return QueueBuilder.durable(QUEUE_RESERVATION_LOG)
+        .withArgument("x-dead-letter-exchange", LOG_EXCHANGE + ".dlx")
+        .withArgument("x-dead-letter-routing-key", "dlq." + ROUTING_KEY_RESERVATION_LOG)
+        .build();
+  }
+
   /* =========================
    * Binding
    * ========================= */
@@ -94,6 +107,14 @@ public class RabbitMQConfig {
   @Bean
   public Binding productLogBinding(Queue productLogQueue, TopicExchange logExchange) {
     return BindingBuilder.bind(productLogQueue).to(logExchange).with(ROUTING_KEY_PRODUCT_LOG);
+  }
+
+  // 예매
+  @Bean
+  public Binding reservationLogBinding(Queue reservationLogQueue, TopicExchange logExchange) {
+    return BindingBuilder.bind(reservationLogQueue)
+        .to(logExchange)
+        .with(ROUTING_KEY_RESERVATION_LOG);
   }
 
   /* =========================
@@ -122,6 +143,12 @@ public class RabbitMQConfig {
     return QueueBuilder.durable(QUEUE_PRODUCT_LOG + ".dlq").build();
   }
 
+  // 예매
+  @Bean
+  public Queue reservationLogDlq() {
+    return QueueBuilder.durable(QUEUE_RESERVATION_LOG + ".dlq").build();
+  }
+
   // 예매 좌석
   @Bean
   public Binding reservationSeatLogDlqBinding(
@@ -145,6 +172,15 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(productLogDlq)
         .to(deadLetterExchange)
         .with("dlq." + ROUTING_KEY_PRODUCT_LOG);
+  }
+
+  // 예매
+  @Bean
+  public Binding reservationLogDlqBinding(
+      Queue reservationLogDlq, TopicExchange deadLetterExchange) {
+    return BindingBuilder.bind(reservationLogDlq)
+        .to(deadLetterExchange)
+        .with("dlq." + ROUTING_KEY_RESERVATION_LOG);
   }
 
   /* =========================

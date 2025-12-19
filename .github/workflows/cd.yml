@@ -1,4 +1,4 @@
-name: Build Product Service Image
+name: Build Log Service Image
 
 on:
   push:
