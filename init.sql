@@ -89,3 +89,16 @@ CREATE TABLE log_service.p_ticket_log
 
     occurred_at    TIMESTAMP    NOT NULL
 );
+
+CREATE TABLE log_service.p_payment_log
+(
+    id            UUID         NOT NULL,
+    payment_id    UUID         NOT NULL,
+    method        VARCHAR(255) NULL,
+    retry_count   INT          NOT NULL DEFAULT 0,
+    action_type   VARCHAR(50)  NOT NULL,
+    actor_type    VARCHAR(20)  NOT NULL,
+    actor_user_id UUID         NULL,
+    occurred_at   TIMESTAMP    NOT NULL
+);
+

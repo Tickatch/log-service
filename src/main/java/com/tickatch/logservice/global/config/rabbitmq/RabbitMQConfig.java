@@ -42,6 +42,10 @@ public class RabbitMQConfig {
   public static final String QUEUE_TICKET_LOG = "tickatch.ticket.log.queue";
   public static final String ROUTING_KEY_TICKET_LOG = "ticket.log";
 
+  // 결제
+  public static final String QUEUE_PAYMENT_LOG = "tickatch.payment.log.queue";
+  public static final String ROUTING_KEY_PAYMENT_LOG = "payment.log";
+
   /* =========================
    * Exchange
    * ========================= */
@@ -98,6 +102,15 @@ public class RabbitMQConfig {
         .build();
   }
 
+  // 결제
+  @Bean
+  public Queue paymentLogQueue() {
+    return QueueBuilder.durable(QUEUE_PAYMENT_LOG)
+        .withArgument("x-dead-letter-exchange", LOG_EXCHANGE + ".dlx")
+        .withArgument("x-dead-letter-routing-key", "dlq." + ROUTING_KEY_PAYMENT_LOG)
+        .build();
+  }
+
   /* =========================
    * Binding
    * ========================= */
@@ -136,6 +149,12 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(ticketLogQueue).to(logExchange).with(ROUTING_KEY_TICKET_LOG);
   }
 
+  // 결제
+  @Bean
+  public Binding paymentLogBinding(Queue paymentLogQueue, TopicExchange logExchange) {
+    return BindingBuilder.bind(paymentLogQueue).to(logExchange).with(ROUTING_KEY_PAYMENT_LOG);
+  }
+
   /* =========================
    * Dead Letter
    * ========================= */
@@ -172,6 +191,12 @@ public class RabbitMQConfig {
   @Bean
   public Queue ticketLogDlq() {
     return QueueBuilder.durable(QUEUE_TICKET_LOG + ".dlq").build();
+  }
+
+  // 결제
+  @Bean
+  public Queue paymentLogDlq() {
+    return QueueBuilder.durable(QUEUE_PAYMENT_LOG + ".dlq").build();
   }
 
   // 예매 좌석
@@ -214,6 +239,14 @@ public class RabbitMQConfig {
     return BindingBuilder.bind(ticketLogDlq)
         .to(deadLetterExchange)
         .with("dlq." + ROUTING_KEY_TICKET_LOG);
+  }
+
+  // 결제
+  @Bean
+  public Binding paymentLogDlqBinding(Queue paymentLogDlq, TopicExchange deadLetterExchange) {
+    return BindingBuilder.bind(paymentLogDlq)
+        .to(deadLetterExchange)
+        .with("dlq." + ROUTING_KEY_PAYMENT_LOG);
   }
 
   /* =========================
