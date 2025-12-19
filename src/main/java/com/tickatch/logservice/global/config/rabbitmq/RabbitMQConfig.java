@@ -22,11 +22,17 @@ public class RabbitMQConfig {
    * ========================= */
   public static final String LOG_EXCHANGE = "tickatch.log";
 
+  // 예매 좌석
   public static final String QUEUE_RESERVATION_SEAT_LOG = "tickatch.reservation-seat.log.queue";
   public static final String ROUTING_KEY_RESERVATION_SEAT_LOG = "reservation-seat.log";
 
+  // 아트홀
   public static final String QUEUE_ARTHALL_LOG = "tickatch.arthall.log.queue";
   public static final String ROUTING_KEY_ARTHALL_LOG = "arthall.log";
+
+  // 상품
+  public static final String QUEUE_PRODUCT_LOG = "tickatch.product.log.queue";
+  public static final String ROUTING_KEY_PRODUCT_LOG = "product.log";
 
   /* =========================
    * Exchange
@@ -39,6 +45,7 @@ public class RabbitMQConfig {
   /* =========================
    * Queue
    * ========================= */
+  // 예매 좌석
   @Bean
   public Queue reservationSeatLogQueue() {
     return QueueBuilder.durable(QUEUE_RESERVATION_SEAT_LOG)
@@ -47,6 +54,7 @@ public class RabbitMQConfig {
         .build();
   }
 
+  // 아트홀
   @Bean
   public Queue artHallLogQueue() {
     return QueueBuilder.durable(QUEUE_ARTHALL_LOG)
@@ -55,9 +63,19 @@ public class RabbitMQConfig {
         .build();
   }
 
+  // 상품
+  @Bean
+  public Queue productLogQueue() {
+    return QueueBuilder.durable(QUEUE_PRODUCT_LOG)
+        .withArgument("x-dead-letter-exchange", LOG_EXCHANGE + ".dlx")
+        .withArgument("x-dead-letter-routing-key", "dlq." + ROUTING_KEY_PRODUCT_LOG)
+        .build();
+  }
+
   /* =========================
    * Binding
    * ========================= */
+  // 예매 좌석
   @Bean
   public Binding reservationSeatLogBinding(
       Queue reservationSeatLogQueue, TopicExchange logExchange) {
@@ -66,9 +84,16 @@ public class RabbitMQConfig {
         .with(ROUTING_KEY_RESERVATION_SEAT_LOG);
   }
 
+  // 아트홀
   @Bean
   public Binding artHallLogBinding(Queue artHallLogQueue, TopicExchange logExchange) {
     return BindingBuilder.bind(artHallLogQueue).to(logExchange).with(ROUTING_KEY_ARTHALL_LOG);
+  }
+
+  // 상품
+  @Bean
+  public Binding productLogBinding(Queue productLogQueue, TopicExchange logExchange) {
+    return BindingBuilder.bind(productLogQueue).to(logExchange).with(ROUTING_KEY_PRODUCT_LOG);
   }
 
   /* =========================
@@ -79,16 +104,25 @@ public class RabbitMQConfig {
     return ExchangeBuilder.topicExchange(LOG_EXCHANGE + ".dlx").durable(true).build();
   }
 
+  // 예매 좌석
   @Bean
   public Queue reservationSeatLogDlq() {
     return QueueBuilder.durable(QUEUE_RESERVATION_SEAT_LOG + ".dlq").build();
   }
 
+  // 아트홀
   @Bean
   public Queue artHallLogDlq() {
     return QueueBuilder.durable(QUEUE_ARTHALL_LOG + ".dlq").build();
   }
 
+  // 상품
+  @Bean
+  public Queue productLogDlq() {
+    return QueueBuilder.durable(QUEUE_PRODUCT_LOG + ".dlq").build();
+  }
+
+  // 예매 좌석
   @Bean
   public Binding reservationSeatLogDlqBinding(
       Queue reservationSeatLogDlq, TopicExchange deadLetterExchange) {
@@ -97,11 +131,20 @@ public class RabbitMQConfig {
         .with("dlq." + ROUTING_KEY_RESERVATION_SEAT_LOG);
   }
 
+  // 아트홀
   @Bean
   public Binding artHallLogDlqBinding(Queue artHallLogDlq, TopicExchange deadLetterExchange) {
     return BindingBuilder.bind(artHallLogDlq)
         .to(deadLetterExchange)
         .with("dlq." + ROUTING_KEY_ARTHALL_LOG);
+  }
+
+  // 상품
+  @Bean
+  public Binding productLogDlqBinding(Queue productLogDlq, TopicExchange deadLetterExchange) {
+    return BindingBuilder.bind(productLogDlq)
+        .to(deadLetterExchange)
+        .with("dlq." + ROUTING_KEY_PRODUCT_LOG);
   }
 
   /* =========================

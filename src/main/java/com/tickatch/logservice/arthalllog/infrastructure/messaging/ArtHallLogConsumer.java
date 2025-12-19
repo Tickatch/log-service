@@ -29,7 +29,7 @@ public class ArtHallLogConsumer {
           ArtHallLog.create(
               event.eventId(),
               event.domainType(), // ART_HALL | STAGE
-              event.domainId(),   // artHallId or stageId
+              event.domainId(), // artHallId or stageId
               event.actionType(), // ACTIVATED | INACTIVATED | DELETED
               event.actorType(),
               event.actorUserId(),

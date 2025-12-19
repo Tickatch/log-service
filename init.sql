@@ -45,3 +45,17 @@ CREATE TABLE log_service.p_arthall_domain_log
 
     occurred_at   TIMESTAMP   NOT NULL
 );
+
+CREATE TABLE log_service.p_product_log
+(
+    id            UUID        NOT NULL,
+
+    product_id    BIGINT      NOT NULL,
+
+    action_type   VARCHAR(50) NOT NULL, -- CREATED, UPDATED, SUBMITTED_FOR_APPROVAL, APPROVED, REJECTED, RESUBMITTED, SALE_SCHEDULED, SALE_STARTED, SALE_CLOSED, COMPLETED, CANCELLED 등
+
+    actor_type    VARCHAR(20) NOT NULL,
+    actor_user_id UUID        NULL,
+
+    occurred_at   TIMESTAMP   NOT NULL
+);
