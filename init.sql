@@ -46,17 +46,17 @@ CREATE TABLE log_service.p_product_log
 
 CREATE TABLE log_service.p_reservation_log
 (
-    id                 UUID         NOT NULL,
+    id                 UUID        NOT NULL,
 
-    reservation_id     UUID         NOT NULL,
-    reservation_number VARCHAR(255) NOT NULL,
+    reservation_id     UUID        NOT NULL,
+    reservation_number VARCHAR(255),
 
-    action_type        VARCHAR(50)  NOT NULL,
+    action_type        VARCHAR(50) NOT NULL,
 
-    actor_type         VARCHAR(20)  NOT NULL,
-    actor_user_id      UUID         NULL,
+    actor_type         VARCHAR(20) NOT NULL,
+    actor_user_id      UUID        NULL,
 
-    occurred_at        TIMESTAMP    NOT NULL
+    occurred_at        TIMESTAMP   NOT NULL
 );
 
 CREATE TABLE log_service.p_ticket_log
