@@ -1,103 +1,245 @@
-﻿# project-interface
+# Tickatch Log Service
 
-## 개요
-이 문서는 [project-interface](https://github.com/tickatch/project-interface) 프로젝트를 기반으로 새로운 서비스 프로젝트를 생성하는 방법을 안내합니다.  
+Tickatch 플랫폼 전반의 비즈니스 행위 이력(Audit Log)을 중앙에서 수집·저장하는 마이크로서비스입니다.  
+각 도메인 서비스에서 발생하는 생성/변경/삭제/상태 변경 행위를 이벤트로 수신하여  
+운영·클레임 대응을 위한 신뢰 가능한 이력 데이터를 제공합니다.
 
-`project-interface`는 Tickatch 서비스 개발 시 공통으로 사용되는 코드, 라이브러리, 설정 등을 포함한 **프로젝트 템플릿** 역할을 합니다.
+## 프로젝트 소개
+
+Log Service는 개별 서비스의 운영 로그와 분리된 **비즈니스 행위 전용 로그 저장소** 역할을 수행합니다.
+
+장애 발생 시 "무슨 오류가 났는가"가 아닌  
+**"어떤 비즈니스 행위가 실제로 발생했는가"** 를 확인하기 위한 목적의 서비스입니다.
+
+로그 적재 실패가 비즈니스 트랜잭션에 영향을 주지 않도록  
+**RabbitMQ 기반 비동기 수집 구조**로 설계되었습니다.
+
+## 기술 스택
+
+| 분류 | 기술 |
+|------|------|
+| Framework | Spring Boot 3.x |
+| Language | Java 21 |
+| Database | PostgreSQL |
+| Messaging | RabbitMQ |
+| Query | JPA / QueryDSL |
+| Security | Spring Security |
+
+## 아키텍처
+
+### 시스템 구성
+```
+Business Services
+ (User, Auth, Product, Reservation, Payment, Ticket, ArtHall 등)
+        │
+        │  Domain Action Event
+        ▼
+     RabbitMQ
+        │
+        ▼
+    Log Service
+        │
+        ▼
+ PostgreSQL (서비스별 로그 테이블)
+```
+
+- 비즈니스 서비스는 도메인 행위 발생 시 이벤트만 발행
+- Log Service는 이벤트를 비동기로 수신하여 로그 저장
+- 로그 저장 실패는 원 서비스 트랜잭션에 영향 없음
+
+### 레이어 구조
+```
+src/main/java/com/tickatch/logservice
+├── LogServiceApplication.java
+│
+├── arthalllog
+│   ├── domain
+│   │   ├── ArtHallLog.java
+│   │   ├── event
+│   │   │   └── ArtHallLogEvent.java
+│   │   └── repository
+│   │       └── ArtHallLogRepository.java
+│   └── infrastructure
+│       └── messaging
+│           └── ArtHallLogConsumer.java
+│
+├── authlog
+│   ├── domain
+│   │   ├── AuthLog.java
+│   │   ├── event
+│   │   │   └── AuthEvent.java
+│   │   └── repository
+│   │       └── AuthLogRepository.java
+│   └── infrastructure
+│       └── messaging
+│           └── AuthLogConsumer.java
+│
+├── paymentlog
+│   ├── domain
+│   │   ├── PaymentLog.java
+│   │   ├── event
+│   │   │   └── PaymentEvent.java
+│   │   └── repository
+│   │       └── PaymentLogRepository.java
+│   └── infrastructure
+│       └── messaging
+│           └── PaymentLogConsumer.java
+│
+├── productlog
+│   ├── domain
+│   │   ├── ProductLog.java
+│   │   ├── event
+│   │   │   └── ProductEvent.java
+│   │   └── repository
+│   │       └── ProductLogRepository.java
+│   └── infrastructure
+│       └── messaging
+│           └── ProductLogConsumer.java
+│
+├── reservationlog
+│   ├── domain
+│   │   ├── ReservationLog.java
+│   │   ├── event
+│   │   │   └── ReservationEvent.java
+│   │   └── repository
+│   │       └── ReservationLogRepository.java
+│   └── infrastructure
+│       └── messaging
+│           └── ReservationLogConsumer.java
+│
+├── reservationseatlog
+│   ├── domain
+│   │   ├── ReservationSeatLog.java
+│   │   ├── event
+│   │   │   └── ReservationSeatEvent.java
+│   │   └── repository
+│   │       └── ReservationSeatLogRepository.java
+│   └── infrastructure
+│       └── messaging
+│           └── ReservationSeatLogConsumer.java
+│
+├── ticketlog
+│   ├── domain
+│   │   ├── TicketLog.java
+│   │   ├── event
+│   │   │   └── TicketEvent.java
+│   │   └── repository
+│   │       └── TicketLogRepository.java
+│   └── infrastructure
+│       └── messaging
+│           └── TicketLogConsumer.java
+│
+├── userlog
+│   ├── domain
+│   │   ├── UserLog.java
+│   │   ├── event
+│   │   │   └── UserEvent.java
+│   │   └── repository
+│   │       └── UserLogRepository.java
+│   └── infrastructure
+│       └── messaging
+│           └── UserLogConsumer.java
+│
+└── global
+    ├── audit
+    │   └── AuditConfig.java
+    ├── config
+    │   ├── querydsl
+    │   │   └── QuerydslConfig.java
+    │   └── rabbitmq
+    │       └── RabbitMQConfig.java
+    └── security
+        └── LogServiceSecurityConfig.java
+```
+
+## 설계 핵심
+
+| 특징 | 설명 |
+|------|------|
+| 도메인별 로그 분리 | 서비스 단위로 로그 Aggregate 및 테이블 분리 |
+| 이벤트 기반 수집 | RabbitMQ 기반 비동기 로그 수신 |
+| Audit 중심 | Read 로그 제외, 핵심 도메인 행위만 저장 |
+| Append Only | 로그 수정·삭제 금지 |
+| 결합도 최소화 | 비즈니스 서비스는 로그 저장 로직을 알 필요 없음 |
+
+### 로그 저장 대상
+
+- **생성(Create)**
+- **수정(Update)**
+- **삭제(Delete)**
+- **상태 변경(Status Change)**
+  - 확정 / 취소 / 완료 등 주요 전이 이벤트
+
+> 단순 조회(Read) 및 디버깅 로그는 저장하지 않습니다.
+
+## 활용 시나리오
+
+- **사용자 클레임 대응**  
+  → "해당 시점에 어떤 상태 변경이 있었는지" 확인
+
+- **장애 분석 보조**  
+  → 기술 오류 이후 실제 비즈니스 영향 파악
+
+- **운영 이력 조회**  
+  → 관리자 기준 서비스·행위 단위 Audit 조회
+
+## 이벤트 연동
+
+### 수신 이벤트 (Consumer)
+
+| 이벤트 | 발행 서비스 | 설명 |
+|--------|------------|------|
+| ArtHallLogEvent | ArtHall Service | 아트홀/스테이지/좌석 행위 로그 |
+| ProductEvent | Product Service | 상품 상태 변경 로그 |
+| ReservationEvent | Reservation Service | 예매 행위 로그 |
+| PaymentEvent | Payment Service | 결제 행위 로그 |
+| TicketEvent | Ticket Service | 티켓 발행/취소 로그 |
+| UserEvent | User Service | 사용자 행위 로그 |
+| AuthEvent | Auth Service | 인증/권한 변경 로그 |
+
+## 데이터 모델 (ERD 예시)
+```
+┌────────────────────────────────────────────┐
+│ p_arthall_domain_log                       │
+├────────────────────────────────────────────┤
+│ id (PK) UUID                               │
+│ action_type VARCHAR                        │
+│ actor_id UUID                              │
+│ actor_type VARCHAR                         │
+│ resource_id VARCHAR                        │
+│ occurred_at TIMESTAMP                      │
+└────────────────────────────────────────────┘
+```
+
+> **※** 모든 로그 테이블은 공통 컬럼 규약을 따르며,  
+> 도메인 특성에 따라 확장 컬럼을 가질 수 있습니다.
+
+## 실행 방법
+
+### 환경 변수
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tickatch
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  rabbitmq:
+    host: localhost
+    port: 9092
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+```
+
+### 실행
+```bash
+./gradlew bootRun
+```
+
+### 테스트
+```bash
+./gradlew test
+```
 
 ---
 
-## 템플릿 사용 방법
-템플릿 사용 방법에는 크게 두 가지가 있습니다.
-
-### Github Template 기능 사용
-1. GitHub 페이지에서 Use this template 버튼을 클릭하여 해당 프로젝트를 복제한 새로운 레포지토리를 생성합니다.
-
-2. 해당 프로젝트를 로컬에 클론합니다.
-``` bash
-git clone https://github.com/tickatch/{새로운-서비스-레포}.git
-cd {새로운-서비스-레포}
-```
-
-3. 다음 명령어 또는 IDE를 통해 패키지명 변경
-``` bash
-// 본 예시에서는 이해를 돕기 위해 새로운 패키지명을 ticketservice 로 사용하였습니다.
-// 실제 사용 시에는 새로운 프로젝트의 패키지명을 사용해주시기 바랍니다.
-mv src/main/java/com/tickatch/projectinterface src/main/java/com/tickatch/ticketservice
-find src/main/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed -i '' 's/package com.tickatch.projectinterface/package com.tickatch.ticketservice/g'
-find src/main/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed -i '' 's/import com.tickatch.projectinterface/import com.tickatch.ticketservice/g'
-
-mv src/test/java/com/tickatch/projectinterface src/test/java/com/tickatch/ticketservice
-find src/test/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed -i '' 's/package com.tickatch.projectinterface/package com.tickatch.ticketservice/g'
-find src/test/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed -i '' 's/import com.tickatch.projectinterface/import com.tickatch.ticketservice/g'
-```
-
-4. IDE로 어플리케이션 진입점, 각종 환경변수 등을 수정합니다. 필수 수정 항목은 다음과 같습니다.
-- ProjectInterfaceApplication.java
-- build.gradle 의 description
-- settings.gradle 의 rootProject.name
-- application.yml 의 spring.application.name
-- gradle.properties
-- LayeredArchitectureTest 코드 내 패키지명
-- 그 외 project-interface 또는 projectinterface로 되어있는 항목
-
-5. gradle의 spotbugsMain, spotbugsTest, spotlessCheck, test 를 실행하여 프로젝트 문제가 없는지 확인합니다.
-
-### Git Clone 기능 활용
-
-1. GitHub에서 새로운 서비스 레포지토리를 생성합니다. 
-   - 예: `user-service`, `order-service` 등
-     
-2. 다음 명령어 또는 github 페이지의 DownloadZip을 활용해 project-interface를 로컬로 클론합니다.
-
-``` bash
-git clone https://github.com/tickatch/project-interface.git
-cd project-interface
-```
-
-3. 불필요한 Git 히스토리 제거 후 새로운 프로젝트 폴더로 이동
-
-``` bash
-rm -rf .git
-cp -R . <새로운-서비스-레포>
-cd <새로운-서비스-레포>
-```
-
-4. 다음 명령어 또는 IDE를 통해 패키지명 변경
-``` bash
-// 본 예시에서는 이해를 돕기 위해 새로운 패키지명을 ticketservice 로 사용하였습니다.
-// 실제 사용 시에는 새로운 프로젝트의 패키지명을 사용해주시기 바랍니다.
-mv src/main/java/com/tickatch/projectinterface src/main/java/com/tickatch/ticketservice
-find src/main/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed -i '' 's/package com.tickatch.projectinterface/package com.tickatch.ticketservice/g'
-find src/main/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed -i '' 's/import com.tickatch.projectinterface/import com.tickatch.ticketservice/g'
-
-mv src/test/java/com/tickatch/projectinterface src/test/java/com/tickatch/ticketservice
-find src/test/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed -i '' 's/package com.tickatch.projectinterface/package com.tickatch.ticketservice/g'
-find src/test/java/com/tickatch/ticketservice -type f -name "*.java" | xargs sed -i '' 's/import com.tickatch.projectinterface/import com.tickatch.ticketservice/g'
-```
-
-5. IDE로 어플리케이션 진입점, 각종 환경변수 등을 수정합니다. 필수 수정 항목은 다음과 같습니다.
-- ProjectInterfaceApplication.java
-- build.gradle.kts 의 description
-- settings.gradle.kts 의 rootProject.name
-- application.yml 의 spring.application.name
-- gradle.properties
-- LayeredArchitectureTest 코드 내 패키지명
-- 그 외 project-interface 또는 projectinterface로 되어있는 항목
-
-6. gradle의 spotbugsMain, spotbugsTest, spotlessCheck, test 를 실행하여 프로젝트에 문제가 없는지 확인합니다.
-
-7. 1번에서 만든 레포지토리와 프로젝트를 연결합니다.
-
-``` bash
-// Mac OS 의 경우 다음 파일이 생성되어 있을 수 있어 삭제합니다.
-find . -name '.DS_Store' -type f -delete
-
-git init
-git add .
-git commit -m "Initialize project from project-interface template"
-git branch -M main
-git remote add origin https://github.com/tickatch/<새로운-서비스-레포>.git
-git push -u origin main
-```
-
+© 2025 Tickatch Team
